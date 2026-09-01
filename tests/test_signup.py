@@ -48,7 +48,7 @@ def test_signup_invalid(signup, case):
 
 
 # 성공 케이스
-@pytest.mark.parametrize("case", [valid_signup_case()])
+@pytest.mark.parametrize("case", [valid_signup_case()], ids=["success"])
 def test_signup_success(signup, case):
     perform_signup(signup, case["data"])
     expect_redirect(signup.page, case["expected"]["redirect"])

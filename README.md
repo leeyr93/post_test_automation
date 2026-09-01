@@ -116,8 +116,10 @@ post_test_automation/
 
 ## 실행 결과
 
-![테스트 실행 결과](image.png)
-[HTML 리포트](https://leeyr93.github.io/post_test_automation/reports/report.html)
+- 테스트 실행 결과
+  - ![테스트 실행 결과 이미지](image.png)
+- HTML 리포트
+  - https://leeyr93.github.io/post_test_automation/reports/report.html
 ---
 
 ## 개선 로드맵
@@ -126,5 +128,5 @@ post_test_automation/
 |---|---|---|
 | **Phase 1** | 테스트 신뢰성 — 로케이터 스코프, 대기 전략, teardown 정합성 | 예정 |
 | **Phase 2** | 구조 정리 — 셀렉터 POM 이관, 계층 경계 복원 | 예정 |
-| **Phase 3** | 실행 환경 및 리포트 — 설정 분리, 마커, 스크린샷·Trace, HTML 리포트 | 예정 |
+| **Phase 3** | 실행 환경 및 리포트 — 설정 분리, 마커, 스크린샷·Trace| 예정 |
 | **Phase 4** | 커버리지 확장 및 CI — 접근 권한·경계값·XSS 시나리오, GitHub Actions | 예정 |

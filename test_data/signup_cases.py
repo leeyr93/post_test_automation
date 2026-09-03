@@ -9,14 +9,23 @@ BASE_VALID_DATA = {
 }
 
 
-def valid_signup_case():
+def get_valid_user_data(**overrides) -> dict:
     data = BASE_VALID_DATA.copy()
-    data["user_id"] = generate_random_user_id()
+    user_id = overrides.get("user_id", generate_random_user_id())
+    data["user_id"] = user_id
+    data["email"] = overrides.get("email", f"{user_id}@gmail.com")
+    data.update(overrides)
+    return data
+
+
+def valid_signup_case():
     return {
         "name": "success",
-        "data": data,
+        "data": get_valid_user_data(),
         "expected": {"redirect": "/login"}
     }
+
+
 
 
 INVALID_CASES = [

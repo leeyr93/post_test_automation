@@ -17,6 +17,8 @@ __pycache__/
 # 테스트 산출물
 artifacts/
 test-results/
+allure-results/
+allure-report/
 
 # IDE
 .idea/

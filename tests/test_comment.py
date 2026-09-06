@@ -4,9 +4,8 @@ from pages.view_page import ViewPage
 from services import post_service, comment_service
 from utils import user
 
-
-@allure.id("TC-48")
-@allure.title("게시글 상세에서 댓글 작성 시 등록 및 내용 노출 확인")
+@allure.id("TC-69")
+@allure.title("상세 페이지에서 댓글 작성 시 노출 확인")
 def test_create_comment(page, precondition_post):
     precondition_post()
     target, post_comment = comment_service.comment_write(page)
@@ -15,8 +14,8 @@ def test_create_comment(page, precondition_post):
     expect(target).to_contain_text(post_comment)
 
 
-@allure.id("TC-49")
-@allure.title("본인이 작성한 댓글의 내용 수정 및 반영 확인")
+@allure.id("TC-70")
+@allure.title("본인 작성 댓글 내용 수정 및 반영 확인")
 def test_edit_comment(page, precondition_post):
     precondition_post()
     comment_service.comment_write(page)
@@ -29,8 +28,8 @@ def test_edit_comment(page, precondition_post):
     expect(updated_comment).to_be_visible()
 
 
-@allure.id("TC-50")
-@allure.title("본인이 작성한 댓글 삭제 및 목록 제거 확인")
+@allure.id("TC-71")
+@allure.title("본인 작성 댓글 삭제 및 목록 제거 확인")
 def test_delete_comment(page, precondition_post):
     precondition_post()
     comment_service.comment_write(page)
@@ -43,8 +42,8 @@ def test_delete_comment(page, precondition_post):
     expect(page.locator("tr").filter(has=page.get_by_text(comment_text, exact=True))).to_have_count(0)
 
 
-@allure.id("TC-51")
-@allure.title("내 글에 타인이 작성한 댓글의 수정 버튼 미노출 확인")
+@allure.id("TC-72")
+@allure.title("내 글 - 타인 댓글 [수정] 버튼 미노출 확인")
 def test_cannot_edit_others_comment_on_my_post(page):
     comment_service.pre_condition_comment(page)
     
@@ -55,8 +54,8 @@ def test_cannot_edit_others_comment_on_my_post(page):
     expect(edit_btn).to_have_count(0)
 
 
-@allure.id("TC-52")
-@allure.title("내 글에 타인이 작성한 댓글의 삭제 버튼 미노출 확인")
+@allure.id("TC-73")
+@allure.title("내 글 - 타인 댓글 [삭제] 버튼 미노출 확인")
 def test_cannot_delete_others_comment_on_my_post(page):
     comment_service.pre_condition_comment(page)
     
@@ -67,8 +66,8 @@ def test_cannot_delete_others_comment_on_my_post(page):
     expect(delete_btn).to_have_count(0)
 
 
-@allure.id("TC-53")
-@allure.title("타인 글에 내가 작성한 댓글의 수정 가능 확인")
+@allure.id("TC-74")
+@allure.title("타인 글 - 내 댓글 [수정] 가능 확인")
 def test_can_edit_my_comment_on_others_post(page):
     comment_service.pre_condition_comment(page)
     
@@ -82,8 +81,8 @@ def test_can_edit_my_comment_on_others_post(page):
     expect(updated_comment).to_be_visible()
 
 
-@allure.id("TC-54")
-@allure.title("타인 글에 내가 작성한 댓글의 삭제 가능 확인")
+@allure.id("TC-75")
+@allure.title("타인 글 - 내 댓글 [삭제] 가능 확인")
 def test_can_delete_my_comment_on_others_post(page):
     comment_service.pre_condition_comment(page)
     
@@ -97,8 +96,8 @@ def test_can_delete_my_comment_on_others_post(page):
     expect(page.locator("tr").filter(has=page.get_by_text(comment_text, exact=True))).to_have_count(0)
 
 
-@allure.id("TC-55")
-@allure.title("타인 글에 타인이 작성한 댓글의 수정 버튼 미노출 확인")
+@allure.id("TC-76")
+@allure.title("타인 글 - 타인 댓글 [수정] 버튼 미노출 확인")
 def test_cannot_edit_others_comment_on_others_post(page):
     comment_service.pre_condition_comment(page)
     
@@ -109,8 +108,8 @@ def test_cannot_edit_others_comment_on_others_post(page):
     expect(edit_btn).to_have_count(0)
 
 
-@allure.id("TC-56")
-@allure.title("타인 글에 타인이 작성한 댓글의 삭제 버튼 미노출 확인")
+@allure.id("TC-77")
+@allure.title("타인 글 - 타인 댓글 [삭제] 버튼 미노출 확인")
 def test_cannot_delete_others_comment_on_others_post(page):
     comment_service.pre_condition_comment(page)
     

@@ -12,7 +12,7 @@
 
 ## 테스트 자동화 대시보드
 이 프로젝트는 GitHub Pages를 통해 실시간 테스트 결과 대시보드를 제공합니다.
-👉 **[테스트 자동화 Allure 대시보드 보기](https://leeyr93.github.io/post_test_automation/)**
+👉 **[테스트 자동화 Allure 대시보드 보기](https://leeyr93.github.io/post_test_automation/docs/)**
 
 ---
 

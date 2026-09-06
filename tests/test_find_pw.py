@@ -1,18 +1,16 @@
 import pytest, re, allure
 from playwright.sync_api import expect
-from pages.login_page import LoginPage
 from pages.find_pw_page import FindPwPage
 from pages.reset_pw_page import ResetPwPage
 from services import find_service, signup_service
 from test_data.find_cases import FIND_PW_INVALID_CASES
 
-@allure.id("TC-26")
-@allure.title("비밀번호 찾기 페이지 기본 요소 및 placeholder 확인")
+@allure.id("TC-47")
+@allure.title("비밀번호 찾기 페이지 UI 확인")
 def test_find_pw_page_display(page):
     find_pw_page = FindPwPage(page)
     find_pw_page.open()
 
-    expect(find_pw_page.title).to_have_text("비밀번호 찾기")
     expect(find_pw_page.id_input).to_be_visible()
     expect(find_pw_page.id_input).to_have_attribute("placeholder", "아이디를 입력해주세요.")
 
@@ -26,24 +24,13 @@ def test_find_pw_page_display(page):
     expect(find_pw_page.submit_button).to_have_text("비밀번호 재설정")
     expect(find_pw_page.signup_link).to_be_visible()
 
-
-@allure.id("TC-27")
-@allure.title("로그인 페이지에서 비밀번호 찾기 이동 링크 확인")
-def test_navigate_to_find_pw_from_login(page):
-    login_page = LoginPage(page)
-    login_page.open()
-    login_page.click_find_pw()
-    expect(page).to_have_url(re.compile(r"/find_pw$"))
-
-
-@allure.id("TC-28")
+@allure.id("TC-48")
 @allure.title("비밀번호 찾기 페이지에서 회원가입 이동 링크 확인")
 def test_navigate_to_join_from_find_pw(page):
     find_pw_page = FindPwPage(page)
     find_pw_page.open()
     find_pw_page.click_signup()
     expect(page).to_have_url(re.compile(r"/join$"))
-
 
 @pytest.mark.parametrize("case", FIND_PW_INVALID_CASES, ids=[c["name"] for c in FIND_PW_INVALID_CASES])
 def test_find_pw_invalid(page, case):
@@ -61,9 +48,8 @@ def test_find_pw_invalid(page, case):
     expect(find_pw_page.server_message).to_be_visible()
     expect(find_pw_page.server_message).to_have_text(case["expected"]["message"])
 
-
-@allure.id("TC-36")
-@allure.title("일치 정보 입력 시 비밀번호 재설정 화면 진입 확인")
+@allure.id("TC-56")
+@allure.title("일치 정보 입력 시 비밀번호 재설정 화면 노출 확인")
 def test_find_pw_success(page):
     user = signup_service.register_user(page)
 

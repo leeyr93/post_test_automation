@@ -12,7 +12,7 @@ def browser():
     → 테스트 속도 개선
     """
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=False, slow_mo=500)
+        browser = p.chromium.launch(headless=False, slow_mo=0)
         yield browser
         browser.close()
 

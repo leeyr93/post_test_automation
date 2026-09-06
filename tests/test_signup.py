@@ -1,3 +1,4 @@
+import allure
 from playwright.sync_api import expect
 from services.signup_service import perform_signup
 from test_data.signup_cases import BASE_VALID_DATA, INVALID_CASES, valid_signup_case
@@ -25,7 +26,8 @@ def expect_all_inputs_empty(signup_page):
     expect(signup_page.email).to_have_value("")
 
 
-# placeholder 테스트
+@allure.id("TC-06")
+@allure.title("회원가입 페이지 입력 필드별 placeholder 안내 문구 확인")
 def test_placeholders(signup):
     expect_placeholder(signup.password, "영문, 숫자, 특수문자 조합. 8-16자")
     expect_placeholder(signup.repassword, "비밀번호 재입력")
@@ -36,6 +38,9 @@ def test_placeholders(signup):
 # invalid 케이스
 @pytest.mark.parametrize("case", INVALID_CASES, ids=[c["name"] for c in INVALID_CASES])
 def test_signup_invalid(signup, case):
+    allure.dynamic.id(case.get("tc_id"))
+    allure.dynamic.title(case.get("tc_title"))
+
     data = copy.deepcopy(BASE_VALID_DATA)
     data.update(case["override"])
 
@@ -50,5 +55,8 @@ def test_signup_invalid(signup, case):
 # 성공 케이스
 @pytest.mark.parametrize("case", [valid_signup_case()], ids=["success"])
 def test_signup_success(signup, case):
+    allure.dynamic.id(case.get("tc_id"))
+    allure.dynamic.title(case.get("tc_title"))
+    
     perform_signup(signup, case["data"])
     expect_redirect(signup.page, case["expected"]["redirect"])

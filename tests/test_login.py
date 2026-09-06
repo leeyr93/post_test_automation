@@ -1,10 +1,12 @@
+import allure
 from playwright.sync_api import expect
 from pages.post_page import PostPage
 from pages.login_page import LoginPage
 from utils.auth import login
 from utils import user
 
-# 로그인 페이지 기본 노출 확인
+@allure.id("TC-01")
+@allure.title("로그인 페이지 기본 요소 및 안내 문구 노출 확인")
 def test_login_page_display(page):
     login_page = LoginPage(page)
     login_page.open()
@@ -18,7 +20,8 @@ def test_login_page_display(page):
     expect(login_page.login_button).to_be_visible()
 
 
-# 아이디/비밀번호 미입력 시 에러 메시지 확인
+@allure.id("TC-02")
+@allure.title("아이디/비밀번호 미입력 상태 로그인 시도시 유효성 에러 확인")
 def test_login_empty_fields(page):
     login_page = LoginPage(page)
     login_page.open()
@@ -34,7 +37,8 @@ def test_login_empty_fields(page):
     expect(login_page.error_message).to_have_text("아이디와 비밀번호를 입력해주세요")
 
 
-# 존재하지 않는 계정으로 로그인 시 에러 메시지 확인
+@allure.id("TC-03")
+@allure.title("미등록 계정 정보로 로그인 시도시 실패 메시지 확인")
 def test_login_unknown_user(page):
     login_page = LoginPage(page)
     login_page.open()
@@ -54,7 +58,8 @@ def test_login_unknown_user(page):
     expect(login_page.error_message).to_have_text("존재하지 않는 사용자입니다.")
 
 
-# 로그아웃 상태 확인
+@allure.id("TC-04")
+@allure.title("비로그인 상태 메인 화면 버튼 노출 확인")
 def test_board_logged_out(page):
     board = PostPage(page)
     board.open()
@@ -62,7 +67,8 @@ def test_board_logged_out(page):
     expect(board.logout_button).not_to_be_visible()
 
 
-# 로그인 상태 확인
+@allure.id("TC-05")
+@allure.title("로그인 완료 후 메인 화면 버튼 노출 확인")
 def test_board_logged_in(page):
     login(page, user.ID, user.PWD)
     board = PostPage(page)

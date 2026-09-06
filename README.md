@@ -1,132 +1,88 @@
-# post_test_automation
+# Post Test Automation
 
-웹 게시판 서비스의 테스트 자동화 프로젝트입니다.
-Playwright + pytest 기반으로 로그인 / 회원가입 / 게시글 / 댓글 기능의 주요 시나리오를 자동화했습니다.
+![Python](https://img.shields.io/badge/Python-3.12-blue?logo=python&logoColor=white)
+![Playwright](https://img.shields.io/badge/Playwright-E2E_Testing-2EAD33?logo=playwright&logoColor=white)
+![pytest](https://img.shields.io/badge/pytest-Testing_Framework-0A9EDC?logo=pytest&logoColor=white)
+![Allure](https://img.shields.io/badge/Allure-Report-F2B300?logo=allure&logoColor=white)
 
-> **현재 상태: 1차 구현 완료 (v0.1)**
-> 테스트 코드 리뷰를 통해 도출한 개선 과제는 [개선 로드맵](#개선-로드맵)에 정리하여 반영 예정입니다.
+> 웹 게시판 서비스의 **E2E 테스트 자동화 프로젝트**입니다.
+> QA 테스트 케이스 명세서를 기반으로 **56개의 독립된 시나리오(1:1 매핑)**를 구현했으며, Allure Report를 연동하여 시각적인 테스트 결과를 제공합니다.
 
 ---
 
-## 목차
-
-- [기술 스택](#기술-스택)
-- [테스트 대상](#테스트-대상)
-- [프로젝트 구조](#프로젝트-구조)
-- [테스트 커버리지](#테스트-커버리지)
-- [실행 방법](#실행-방법)
-- [실행 결과](#실행-결과)
-- [개선 로드맵](#개선-로드맵)
+## 테스트 자동화 대시보드
+이 프로젝트는 GitHub Pages를 통해 실시간 테스트 결과 대시보드를 제공합니다.
+👉 **[테스트 자동화 Allure 대시보드 보기](https://leeyr93.github.io/post_test_automation/)**
 
 ---
 
 ## 기술 스택
-
-| 구분 | 사용 기술 |
-|---|---|
-| 언어 | Python 3.12 |
-| 테스트 프레임워크 | pytest |
-| 브라우저 자동화 | Playwright |
-| 설계 패턴 | Page Object Model |
+- **언어:** Python 3.12
+- **프레임워크:** pytest
+- **자동화 도구:** Playwright
+- **디자인 패턴:** Page Object Model (POM)
+- **리포팅:** Allure Report
 
 ---
 
-## 테스트 대상
+## 테스트 커버리지 요약 (총 56개 시나리오)
+기존의 다중 검증 로직을 단일 책임 원칙에 따라 분리하여, 기능별로 독립된 테스트 환경을 구축했습니다.
+*(※ 전체 56개 상세 시나리오의 통과 여부 및 실행 기록은 상단의 **Allure 대시보드 링크**에서 확인하실 수 있습니다.)*
 
-로컬 환경에서 구동되는 게시판 웹 애플리케이션이며,
-회원가입 / 로그인 / 게시글 CRUD / 댓글 CRUD / 작성자 권한 제어 기능을 제공합니다.
-
----
-
-## 프로젝트 구조
-
-```
-post_test_automation/
-├── tests/                 
-│   ├── test_login.py
-│   ├── test_signup.py
-│   ├── test_post.py
-│   └── test_comment.py
-├── services/               
-│   ├── post_service.py
-│   ├── comment_service.py
-│   └── signup_service.py
-├── pages/                  
-│   ├── login_page.py
-│   ├── signup_page.py
-│   ├── post_page.py
-│   ├── write_page.py
-│   └── view_page.py
-├── utils/                  
-├── test_data/              
-└── conftest.py             
-```
-
----
-
-## 테스트 커버리지
-
-### 로그인 / 로그아웃 — `test_login.py`
-
-| ID | 시나리오 |
-|---|---|
-| LOGIN-01 | 로그인 페이지 요소 및 placeholder 노출 |
-| LOGIN-02 | 아이디/비밀번호 미입력 시 에러 메시지 |
-| LOGIN-03 | 미등록 계정 로그인 시 에러 메시지 |
-| LOGIN-04 | 비로그인 상태 — 로그인 버튼 노출 |
-| LOGIN-05 | 로그인 상태 — 로그아웃 버튼 노출 |
-
-### 회원가입 — `test_signup.py`
-
-| ID | 시나리오 |
-|---|---|
-| SIGNUP-01 | 입력 필드 placeholder 검증 |
-| SIGNUP-02 | 유효성 실패 케이스 (parametrize) |
-| SIGNUP-03 | 가입 성공 후 리다이렉트 |
-
-### 게시글 — `test_post.py`
-
-| ID | 시나리오 |
-|---|---|
-| POST-01 | 게시글 작성 후 목록/상세 반영 확인 |
-| POST-02 | 검색 — 결과 있음 / 결과 없음 / 목록 복귀 |
-| POST-03 | 게시글 수정 후 상세·목록 반영 확인 |
-| POST-04 | 타인 게시글 수정 버튼 미노출 |
-| POST-05 | 게시글 삭제 후 목록 미노출 |
-| POST-06 | 타인 게시글 삭제 버튼 미노출 |
-
-### 댓글 — `test_comment.py`
-
-| ID | 시나리오 |
-|---|---|
-| CMT-01 | 댓글 작성 후 노출 확인 |
-| CMT-02 | 본인 댓글 수정 |
-| CMT-03 | 본인 댓글 삭제 |
-| CMT-04 | 내 글 × 타인 댓글 → 수정·삭제 불가 |
-| CMT-05 | 타인 글 × 내 댓글 → 수정·삭제 가능 |
-| CMT-06 | 타인 글 × 타인 댓글 → 수정·삭제 불가 |
-
----
-
-## 실행 방법
-
-> 테스트 대상 애플리케이션은 로컬 환경에서만 구동되어 외부에 공개되어 있지 않습니다.
-
----
-
-## 실행 결과
-
-- 테스트 실행 결과
-  - ![테스트 실행 결과 이미지](image.png)
-- HTML 리포트
-  - https://leeyr93.github.io/post_test_automation/reports/report.html
----
-
-## 개선 로드맵
-
-| 단계 | 목표 | 상태 |
+| 도메인 | 주요 검증 내용 | 시나리오 수 |
 |---|---|---|
-| **Phase 1** | 테스트 신뢰성 — 로케이터 스코프, 대기 전략, teardown 정합성 | 예정 |
-| **Phase 2** | 구조 정리 — 셀렉터 POM 이관, 계층 경계 복원 | 예정 |
-| **Phase 3** | 실행 환경 및 리포트 — 설정 분리, 마커, 스크린샷·Trace| 예정 |
-| **Phase 4** | 커버리지 확장 및 CI — 접근 권한·경계값·XSS 시나리오, GitHub Actions | 예정 |
+| **로그인 / 로그아웃** | UI 요소 검증, 상태별 버튼 노출, 실패 케이스 제어 | 5개 |
+| **회원가입** | 유효성(Validation) 실패 케이스 6종, 가입 성공 흐름 | 3개 |
+| **계정 찾기 (ID/PW)** | 사용자 정보 매칭 실패 예외 처리, 성공 시 리다이렉트 흐름 | 16개 |
+| **비밀번호 재설정** | 보안성 제어, 비밀번호 변경 후 새로운 E2E 로그인 플로우 | 4개 |
+| **게시글 (CRUD)** | 작성/수정/삭제 권한 제어(본인 vs 타인), 키워드 검색 로직 | 7개 |
+| **댓글 (CRUD)** | 댓글 작성, 본인/타인 게시글 및 댓글 간의 복합적인 권한 제어 로직 | 9개 |
+| **파라미터화 테스트** | `pytest.mark.parametrize`를 활용한 반복 데이터(Data-Driven) 검증 | 12개 |
+
+---
+
+## 주요 프로젝트 구조
+```text
+post_test_automation/
+├── tests/
+├── services/
+├── pages/
+├── test_data/
+├── conftest.py
+└── docs/
+```
+
+---
+
+## 로컬 실행 방법
+
+**1. 환경 셋업**
+```bash
+# Allure CLI 설치 (Mac 기준)
+brew install allure
+
+# 의존성 패키지 설치
+pip install allure-pytest playwright
+playwright install
+```
+
+**2. 테스트 실행 및 리포트 조회**
+```bash
+# 이전 기록을 비우고 테스트 실행 (결과물 수집)
+pytest --alluredir=allure-results --clean-alluredir
+
+# 로컬 브라우저에 대시보드 띄우기
+allure serve allure-results
+```
+*(※ 정적 리포트 업데이트: `allure generate allure-results --clean -o docs` 실행 후 깃허브 푸시)*
+
+---
+
+## 향후 개선 로드맵
+
+| 단계 | 목표 | 상세 내용 |
+|---|---|---|
+| **Phase 1** | 테스트 신뢰성 강화 | 로케이터 스코프 및 대기(Wait) 전략 고도화, teardown 정합성 보장 |
+| **Phase 2** | 구조 리팩토링 | 셀렉터 POM 이관 및 계층 경계 복원 |
+| **Phase 3** | 실행 환경 및 리포팅 고도화 | 환경 설정 분리, 테스트 마커 적용, 실패 시 스크린샷 및 Trace 수집 |
+| **Phase 4** | 커버리지 확장 및 CI/CD | 접근 권한, 경계값, XSS 등 엣지 케이스 추가 및 GitHub Actions 연동 |

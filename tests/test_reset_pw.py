@@ -1,4 +1,4 @@
-import pytest, re
+import pytest, re, allure
 from playwright.sync_api import expect
 from pages.login_page import LoginPage
 from pages.reset_pw_page import ResetPwPage
@@ -7,7 +7,9 @@ from test_data.find_cases import RESET_PW_INVALID_CASES
 from utils.auth import login
 from utils import url
 
-# 1. 비밀번호 재설정 페이지 UI 기본 노출 및 placeholder 검증
+
+@allure.id("TC-37")
+@allure.title("비밀번호 재설정 페이지 기본 요소 및 placeholder 확인")
 def test_reset_pw_page_display(page):
     reset_pw_page = ResetPwPage(page)
     reset_pw_page.open()
@@ -23,9 +25,11 @@ def test_reset_pw_page_display(page):
     expect(reset_pw_page.submit_button).to_have_text("확인")
 
 
-# 2. 비밀번호 재설정 실패 케이스 검증 (비밀번호 불일치)
 @pytest.mark.parametrize("case", RESET_PW_INVALID_CASES, ids=[c["name"] for c in RESET_PW_INVALID_CASES])
 def test_reset_pw_mismatch(page, case):
+    allure.dynamic.id(case.get("tc_id"))
+    allure.dynamic.title(case.get("tc_title"))
+
     user = signup_service.register_user(page)
 
     reset_pw_page = find_service.find_pw(
@@ -44,7 +48,8 @@ def test_reset_pw_mismatch(page, case):
     expect(reset_pw_page.server_message).to_have_text(case["expected"]["message"])
 
 
-# 3. 비밀번호 찾기 → 비밀번호 재설정 → 신규 비밀번호 로그인 전체 E2E 흐름 검증
+@allure.id("TC-39")
+@allure.title("비밀번호 재설정 후 이전 비번 실패 및 새 비번 로그인 성공 E2E 확인")
 def test_find_and_reset_pw_e2e(page):
     user = signup_service.register_user(page)
     new_password = "NewPassword123!"
@@ -77,7 +82,8 @@ def test_find_and_reset_pw_e2e(page):
     expect(page).to_have_url(url.URL_BOARD_LIST)
 
 
-# 4. 재설정 URL 직접 접근(?id=xxx) 후 비밀번호 변경 및 로그인 검증
+@allure.id("TC-40")
+@allure.title("재설정 URL 직접 접근(?id=xxx)을 통한 변경 및 로그인 확인")
 def test_direct_reset_pw_url(page):
     user = signup_service.register_user(page)
     new_password = "DirectReset123!"
@@ -94,4 +100,3 @@ def test_direct_reset_pw_url(page):
     # 새 비밀번호로 로그인 확인
     login(page, user["user_id"], new_password)
     expect(page).to_have_url(url.URL_BOARD_LIST)
-

@@ -1,3 +1,4 @@
+import allure
 from playwright.sync_api import expect
 from pages.view_page import ViewPage
 from pages.post_page import PostPage
@@ -5,7 +6,8 @@ from services import post_service
 from utils import user, url
 import uuid, re
 
-#게시글 작성
+@allure.id("TC-41")
+@allure.title("신규 게시글 작성 후 메인 목록 및 상세 화면 반영 확인")
 def test_post_write(page, precondition_post):
     title = f"게시글 작성 제목_{uuid.uuid4().hex[:8]}"
     content = "게시글 작성 내용"
@@ -19,10 +21,9 @@ def test_post_write(page, precondition_post):
     expect(page.get_by_text(content)).to_be_visible()
 
 
-#게시글 검색
-def test_post_search(page, precondition_post):
-    board = PostPage(page)
-
+@allure.id("TC-42")
+@allure.title("등록된 게시글 키워드로 검색 시 검색 결과 노출 확인")
+def test_post_search_found(page, precondition_post):
     title = f"검색 게시글 제목_{uuid.uuid4().hex[:8]}"
     content = "검색 게시글 내용"
     precondition_post(title, content)
@@ -30,6 +31,15 @@ def test_post_search(page, precondition_post):
     # 검색 - 검색 결과가 있는 경우  
     post_service.search_post(page, title)
     expect(page.get_by_text(title)).to_be_visible()
+
+
+@allure.id("TC-43")
+@allure.title("존재하지 않는 키워드 검색 시 안내 문구 및 목록 복귀 링크 확인")
+def test_post_search_not_found(page, precondition_post):
+    board = PostPage(page)
+    title = f"검색 게시글 제목_{uuid.uuid4().hex[:8]}"
+    content = "검색 게시글 내용"
+    precondition_post(title, content)
 
     # 검색 - 검색 결과가 없는 경우
     post_service.search_post(page, title + "검색 결과 없음")
@@ -40,8 +50,9 @@ def test_post_search(page, precondition_post):
     expect(page).to_have_url(url.URL_BOARD_LIST)
 
 
-#게시글 수정
-def test_post_edit(page, precondition_post):
+@allure.id("TC-44")
+@allure.title("본인 작성 게시글 수정 후 상세 화면 및 목록 반영 확인")
+def test_post_edit_mine(page, precondition_post):
     view = ViewPage(page)
 
     title = f"수정 전 제목_{uuid.uuid4().hex[:8]}"
@@ -65,14 +76,23 @@ def test_post_edit(page, precondition_post):
     expect(page.get_by_text(new_title)).to_be_visible()
     expect(page.get_by_text(new_content)).to_be_visible()
 
-    # 남의 글 수정 불가능 확인
-    view.click_go_main()
+
+@allure.id("TC-45")
+@allure.title("타인이 작성한 게시글 조회 시 수정 버튼 미노출 확인")
+def test_post_edit_others_hidden(page, precondition_post):
+    view = ViewPage(page)
+
+    title = f"수정 전 제목_{uuid.uuid4().hex[:8]}"
+    content = "수정 전 내용"
+    precondition_post(title, content) # 로그인해서 남의 글 보려면 일단 게시판 접근 위한 fixture 재활용
+
     post_service.click_post(page, user.ID_TEMP)
     expect(view.edit_button).not_to_be_visible()
 
 
-#게시글 삭제
-def test_delete_post(page, precondition_post):
+@allure.id("TC-46")
+@allure.title("본인 작성 게시글 삭제 완료 및 목록 미노출 확인")
+def test_delete_post_mine(page, precondition_post):
     title = f"게시글 삭제 제목_{uuid.uuid4().hex[:8]}"
     content = "게시글 삭제 내용"
     precondition_post(title, content)
@@ -85,9 +105,15 @@ def test_delete_post(page, precondition_post):
     post = PostPage(page)
     expect(post.find_post_by_title(title)).to_have_count(0)
 
+
+@allure.id("TC-47")
+@allure.title("타인이 작성한 게시글 조회 시 삭제 버튼 미노출 확인")
+def test_delete_post_others_hidden(page, precondition_post):
     # 남의 글 선택 시 삭제 버튼 미노출 확인
-    post_service.click_post(page, user.ID_TEMP)
+    # precondition_post 가 로그인 처리를 하므로 활용
+    title = f"게시글 확인 제목_{uuid.uuid4().hex[:8]}"
+    precondition_post(title, "내용")
     view = ViewPage(page)
+    
+    post_service.click_post(page, user.ID_TEMP)
     expect(view.delete_button).not_to_be_visible()
-
-

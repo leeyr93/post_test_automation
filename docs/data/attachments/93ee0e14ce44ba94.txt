@@ -1,4 +1,0 @@
-[teardown 실패] '게시글 삭제 제목_80cb5197' 삭제 안 됨: Locator.click: Timeout 30000ms exceeded.
-Call log:
-  - waiting for locator("table tbody tr").filter(has=locator("td:nth-child(2)").filter(has_text="게시글 삭제 제목_80cb5197")).first
-

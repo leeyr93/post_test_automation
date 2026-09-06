@@ -7,7 +7,7 @@ from test_data.find_cases import RESET_PW_INVALID_CASES
 from utils.auth import login
 from utils import url
 
-@allure.id("TC-57")
+@allure.id("TC-56")
 @allure.title("비밀번호 재설정 페이지 UI 확인")
 def test_reset_pw_page_display(page):
     reset_pw_page = ResetPwPage(page)
@@ -45,7 +45,7 @@ def test_reset_pw_mismatch(page, case):
     expect(reset_pw_page.server_message).to_be_visible()
     expect(reset_pw_page.server_message).to_have_text(case["expected"]["message"])
 
-@allure.id("TC-59")
+@allure.id("TC-58")
 @allure.title("비밀번호 재설정 확인")
 def test_reset_pw_success(page):
     user = signup_service.register_user(page)
@@ -63,7 +63,7 @@ def test_reset_pw_success(page):
     )
     expect(page).to_have_url(re.compile(r"/login$"))
 
-@allure.id("TC-60")
+@allure.id("TC-59")
 @allure.title("비밀번호 재설정 후 로그인 확인")
 def test_reset_pw_login_check(page):
     user = signup_service.register_user(page)

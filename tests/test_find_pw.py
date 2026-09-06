@@ -5,7 +5,7 @@ from pages.reset_pw_page import ResetPwPage
 from services import find_service, signup_service
 from test_data.find_cases import FIND_PW_INVALID_CASES
 
-@allure.id("TC-47")
+@allure.id("TC-46")
 @allure.title("비밀번호 찾기 페이지 UI 확인")
 def test_find_pw_page_display(page):
     find_pw_page = FindPwPage(page)
@@ -24,7 +24,7 @@ def test_find_pw_page_display(page):
     expect(find_pw_page.submit_button).to_have_text("비밀번호 재설정")
     expect(find_pw_page.signup_link).to_be_visible()
 
-@allure.id("TC-48")
+@allure.id("TC-47")
 @allure.title("비밀번호 찾기 페이지에서 회원가입 이동 링크 확인")
 def test_navigate_to_join_from_find_pw(page):
     find_pw_page = FindPwPage(page)
@@ -48,7 +48,7 @@ def test_find_pw_invalid(page, case):
     expect(find_pw_page.server_message).to_be_visible()
     expect(find_pw_page.server_message).to_have_text(case["expected"]["message"])
 
-@allure.id("TC-56")
+@allure.id("TC-55")
 @allure.title("일치 정보 입력 시 비밀번호 재설정 화면 노출 확인")
 def test_find_pw_success(page):
     user = signup_service.register_user(page)

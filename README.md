@@ -11,7 +11,7 @@
 |---|---|:---:|
 | 📮 **Postman API 명세서** | 32개 API 엔드포인트 및 인가(403) 검증 명세 | [👉 Postman Documenter](https://documenter.getpostman.com/view/2584527/2sBYAxNoaj) |
 | 📊 **Allure 대시보드** | 74개 UI E2E 시나리오 실행 결과 리포트 | [👉 Allure Live Report](https://leeyr93.github.io/post_test_automation/docs/) |
-| 📑 **QA 테스트 케이스** | 74개 시나리오별 조건/절차/기대결과 명세서 | [👉 `qa_test_cases.csv`](./qa_test_cases.csv) |
+| 📑 **QA 테스트 케이스** | 74개 시나리오별 조건/절차/기대결과 명세서 | [👉 `docs/qa_test_cases.csv`](./docs/qa_test_cases.csv) |
 | 🖥️ **대상 웹 서비스** | Node.js / Express 기반 웹 게시판 어플리케이션 | [👉 `leeyr93/post`](https://github.com/leeyr93/post) |
 
 ---
@@ -44,10 +44,10 @@
 ### 1. API 테스트 실행 (Newman CLI)
 ```bash
 # 콘솔에서 즉시 전체 테스트 실행 (32개 검증)
-npx newman run postman_collection.json
+npx newman run docs/postman_collection.json
 
 # 대시보드 형태의 HTML 리포트 생성
-newman run postman_collection.json -r htmlextra --reporter-htmlextra-export ./newman_report.html
+newman run docs/postman_collection.json -r htmlextra --reporter-htmlextra-export ./newman_report.html
 ```
 
 ### 2. UI E2E 테스트 실행 (Playwright)
@@ -65,18 +65,9 @@ pytest tests/ --alluredir=allure-results --clean-alluredir
 allure serve allure-results
 ```
 
----
-
-## 📁 디렉터리 구조
-
-```text
-post_test_automation/
-├── postman_collection.json # Postman API 자동화 컬렉션 (32개 엔드포인트)
-├── newman_report.html      # Newman HTML 대시보드 리포트
-├── qa_test_cases.csv       # QA 테스트 케이스 명세서 (74개 시나리오)
-├── NOTION_PORTFOLIO.md     # 노션 포트폴리오용 원본 마크다운 템플릿
-├── pages/                  # POM (Page Object Model) 페이지 액션 정의
-├── tests/                  # Allure 메타데이터 기반 pytest E2E 스크립트
-├── services/               # 공통 비즈니스 플로우 헬퍼 (로그인, 가입 등)
-└── docs/                   # GitHub Pages 배포용 Allure 정적 리포트
+### 3. Allure 정적 리포트 재생성 (GitHub Pages 배포용)
+```bash
+allure generate allure-results --clean -o docs
 ```
+
+

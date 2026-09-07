@@ -43,7 +43,7 @@ def test_signup_invalid(signup, case):
 
     expect_error(signup, case["expected"]["message"])
 
-@allure.id("TC-22")
+@allure.id("TC-20")
 @allure.title("유효한 정보로 가입 성공 및 화면 이동 확인")
 def test_signup_success(signup):
     data = copy.deepcopy(BASE_VALID_DATA)

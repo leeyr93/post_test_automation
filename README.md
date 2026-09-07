@@ -4,11 +4,11 @@
 
 ---
 
-## 주요 산출물 바로가기
+## 주요 산출물
 
 | 산출물 | 설명 | 링크 |
 |---|---|:---:|
-| **대상 웹 서비스** | Node.js / Express 기반 웹 게시판 서비스 | [`leeyr93/post`](https://github.com/leeyr93/post) |
+| **대상 웹 게시판** | Node.js / Express 기반 웹 게시판 서비스 | [`leeyr93/post`](https://github.com/leeyr93/post) |
 | **QA 테스트 케이스** | E2E 시나리오 조건·절차·기대결과 명세 | [`docs/qa_test_cases.csv`](./docs/qa_test_cases.csv) |
 | **Postman API 명세서** | 전체 API 및 예외/보안 검증 명세 | [Postman Documenter](https://documenter.getpostman.com/view/2584527/2sBYAxNoaj) |
 | **Allure 대시보드** | E2E 자동화 실행 결과 리포트 | [Allure Live Report](https://leeyr93.github.io/post_test_automation/docs/) |
@@ -19,7 +19,7 @@
 ## 기술 스택
 
 * **E2E Automation**: Python 3.12, Playwright, pytest, POM (Page Object Model), Allure Framework, GitHub Pages
-* **API Test Automation**: Postman, Newman CLI, JavaScript Sandbox, newman-reporter-htmlextra, GitHub Pages
+* **API Test Automation**: Postman, Newman
 
 ---
 

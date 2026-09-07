@@ -10,7 +10,7 @@
 |---|---|:---:|
 | **대상 웹 게시판** | Node.js / Express 기반 웹 게시판 서비스 | [`leeyr93/post`](https://github.com/leeyr93/post) |
 | **QA 테스트 케이스** | E2E 시나리오 조건·절차·기대결과 명세 | [`docs/qa_test_cases.csv`](./docs/qa_test_cases.csv) |
-| **Postman API 명세서** | 전체 API 및 예외/보안 검증 명세 | [Postman Documenter](https://documenter.getpostman.com/view/2584527/2sBYAxNoaj) |
+| **Postman API 명세서** | 전체 API 및 예외/보안 검증 명세 | [Postman Documenter](https://documenter.getpostman.com/view/2584527/2sBYAxPUrH) |
 | **Allure 대시보드** | E2E 자동화 실행 결과 리포트 | [Allure Live Report](https://leeyr93.github.io/post_test_automation/docs/) |
 | **Newman 리포트** | API 자동화 실행 결과 HTML 리포트 | [Newman Live Report](https://leeyr93.github.io/post_test_automation/docs/newman_report.html) |
 

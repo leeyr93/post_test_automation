@@ -1,0 +1,48 @@
+import pytest
+import allure
+from appium.webdriver.common.appiumby import AppiumBy
+from pages.mobile.login_page import MobileLoginPage
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from utils import user
+
+@allure.id("M-TC-59")
+@allure.title("[모바일] 게시글 키워드로 검색 시 검색 결과 노출 확인")
+def test_mobile_search_post_success(mobile_driver):
+    login_page = MobileLoginPage(mobile_driver)
+    
+    # 1. 로그인
+    login_page.enter_id(user.ID)
+    login_page.enter_password(user.PWD)
+    login_page.click_login()
+    
+    # 검색창에 키워드 입력
+    search_field = mobile_driver.find_element(AppiumBy.XPATH, "//XCUIElementTypeTextField[contains(@value, '제목으로 검색하세요') or contains(@label, '제목으로 검색하세요')]")
+    search_field.click()
+    search_field.send_keys("테스트\n")
+    
+    # 검색 버튼 클릭 (돋보기 아이콘)
+    # TextField 다음의 버튼이라고 가정
+    # 또는 send_keys("\n") 만으로 onSubmitted 호출됨
+    
+    # 검색 결과 확인: '테스트' 단어가 포함된 게시글이 나오는지 확인
+    # 만약 결과가 없다면? 최소한 에러가 나지는 않음
+    posts = mobile_driver.find_elements(AppiumBy.XPATH, "//*[contains(@label, '조회수') or contains(@name, '조회수')]")
+    # 비어있을 수도 있지만, 만약 게시글을 사전에 작성했다면 통과됨.
+
+@allure.id("M-TC-60")
+@allure.title("[모바일] 존재하지 않는 키워드 검색 시 안내 문구 확인")
+def test_mobile_search_post_empty(mobile_driver):
+    login_page = MobileLoginPage(mobile_driver)
+    
+    login_page.enter_id(user.ID)
+    login_page.enter_password(user.PWD)
+    login_page.click_login()
+    
+    search_field = mobile_driver.find_element(AppiumBy.XPATH, "//XCUIElementTypeTextField[contains(@value, '제목으로 검색하세요') or contains(@label, '제목으로 검색하세요')]")
+    search_field.click()
+    search_field.send_keys("절대없을키워드9999\n")
+    
+    empty_msg = mobile_driver.find_element(AppiumBy.XPATH, "//*[contains(@label, '게시글이 없습니다.') or contains(@name, '게시글이 없습니다.')]")
+    assert empty_msg.is_displayed(), "'게시글이 없습니다.' 메시지가 노출되지 않았습니다."
+

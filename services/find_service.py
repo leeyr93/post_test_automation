@@ -1,7 +1,7 @@
 from playwright.sync_api import Page
-from pages.find_id_page import FindIdPage, FindIdResultPage
-from pages.find_pw_page import FindPwPage
-from pages.reset_pw_page import ResetPwPage
+from pages.web.find_id_page import FindIdPage, FindIdResultPage
+from pages.web.find_pw_page import FindPwPage
+from pages.web.reset_pw_page import ResetPwPage
 
 def find_id(page: Page, name: str, email: str) -> FindIdResultPage:
     find_id_page = FindIdPage(page)

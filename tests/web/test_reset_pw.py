@@ -1,7 +1,7 @@
 import pytest, re, allure
 from playwright.sync_api import expect
-from pages.login_page import LoginPage
-from pages.reset_pw_page import ResetPwPage
+from pages.web.login_page import LoginPage
+from pages.web.reset_pw_page import ResetPwPage
 from services import find_service, signup_service
 from test_data.find_cases import RESET_PW_INVALID_CASES
 from utils.auth import login

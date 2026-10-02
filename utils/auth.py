@@ -1,4 +1,4 @@
-from pages.login_page import LoginPage
+from pages.web.login_page import LoginPage
 from utils import url
 
 def login(page, user_id, password):

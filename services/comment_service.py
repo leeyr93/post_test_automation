@@ -1,5 +1,5 @@
-from pages.post_page import PostPage
-from pages.view_page import ViewPage
+from pages.web.post_page import PostPage
+from pages.web.view_page import ViewPage
 from services import post_service
 from utils.auth import login
 from utils import user

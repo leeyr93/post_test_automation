@@ -1,6 +1,6 @@
 import pytest, copy, allure
 from playwright.sync_api import expect
-from pages.signup_page import SignupPage
+from pages.web.signup_page import SignupPage
 from test_data.signup_cases import INVALID_CASES, BASE_VALID_DATA
 import uuid
 

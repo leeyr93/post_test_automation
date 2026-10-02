@@ -1,5 +1,5 @@
 from playwright.sync_api import Page
-from pages.signup_page import SignupPage
+from pages.web.signup_page import SignupPage
 from test_data.signup_cases import get_valid_user_data
 from utils import url
 

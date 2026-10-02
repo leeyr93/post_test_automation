@@ -1,6 +1,6 @@
 import pytest, re, allure
 from playwright.sync_api import expect
-from pages.find_id_page import FindIdPage, FindIdResultPage
+from pages.web.find_id_page import FindIdPage, FindIdResultPage
 from services import find_service, signup_service
 from test_data.find_cases import FIND_ID_INVALID_CASES
 

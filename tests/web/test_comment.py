@@ -1,6 +1,6 @@
 import allure
 from playwright.sync_api import expect
-from pages.view_page import ViewPage
+from pages.web.view_page import ViewPage
 from services import post_service, comment_service
 from utils import user
 

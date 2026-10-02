@@ -1,8 +1,8 @@
 import allure
 from playwright.sync_api import expect
-from pages.view_page import ViewPage
-from pages.post_page import PostPage
-from pages.write_page import WritePage
+from pages.web.view_page import ViewPage
+from pages.web.post_page import PostPage
+from pages.web.write_page import WritePage
 from services import post_service
 from utils import user, url
 import uuid, re

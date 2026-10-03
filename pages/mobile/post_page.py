@@ -18,7 +18,7 @@ class MobilePostPage(MobileBasePage):
         self.click_element((AppiumBy.XPATH, f"(//*[contains(@label, '{title}') or contains(@name, '{title}')])[1]"))
 
     def enter_comment(self, comment):
-        self.input_text((AppiumBy.XPATH, "//XCUIElementTypeTextField"), comment + "\n")
+        self.input_text((AppiumBy.ACCESSIBILITY_ID, "comment_input"), comment + "\n")
 
     def click_submit_comment(self):
         try: self.driver.hide_keyboard()
@@ -30,27 +30,23 @@ class MobilePostPage(MobileBasePage):
         try: self.click_element((AppiumBy.ACCESSIBILITY_ID, "Return"), timeout=1)
         except: pass
         
-        self.click_element((AppiumBy.XPATH, "//*[contains(@label, '등록') or contains(@name, '등록')]"))
+        self.click_element((AppiumBy.ACCESSIBILITY_ID, "comment_submit_btn"))
 
     def is_post_in_list(self, title: str) -> bool:
         return self.is_displayed((AppiumBy.XPATH, f"//*[contains(@label, '{title}') or contains(@name, '{title}')]"))
 
     def click_more_menu(self):
-        btns = self.wait_for_elements((AppiumBy.XPATH, "//XCUIElementTypeButton[contains(@label, 'Show menu') or contains(@name, 'Show menu')]"))
-        if not btns:
-            btns = self.wait_for_elements((AppiumBy.XPATH, "//XCUIElementTypeButton"))
-        if btns:
-            btns[-1].click()
+        # [리팩터링] 기본 tooltip(Show menu) 의존 제거. 앱에서 부여한 ID 사용
+        self.click_element((AppiumBy.ACCESSIBILITY_ID, "post_more_btn"))
             
     def is_more_menu_visible(self) -> bool:
-        btns = self.wait_for_elements((AppiumBy.XPATH, "//XCUIElementTypeButton[contains(@label, 'Show menu') or contains(@name, 'Show menu')]"), timeout=2)
-        return len(btns) > 0
+        return self.is_displayed((AppiumBy.ACCESSIBILITY_ID, "post_more_btn"), timeout=2)
 
     def click_edit_post(self):
-        self.click_element((AppiumBy.XPATH, "//*[contains(@label, '글 수정') or contains(@name, '글 수정')]"))
+        self.click_element((AppiumBy.ACCESSIBILITY_ID, "post_menu_edit"))
         
     def click_delete_post(self):
-        self.click_element((AppiumBy.XPATH, "//*[contains(@label, '글 삭제') or contains(@name, '글 삭제')]"))
+        self.click_element((AppiumBy.ACCESSIBILITY_ID, "post_menu_delete"))
 
     def clear_title(self):
         elem = self.wait_for_element((AppiumBy.ACCESSIBILITY_ID, "제목"))
@@ -60,53 +56,36 @@ class MobilePostPage(MobileBasePage):
         self.click_element((AppiumBy.ACCESSIBILITY_ID, "수정 완료"))
 
     def search_post(self, keyword: str):
-        self.input_text((AppiumBy.XPATH, "//XCUIElementTypeTextField[contains(@value, '제목으로 검색하세요') or contains(@label, '제목으로 검색하세요')]"), keyword + "\n")
+        self.input_text((AppiumBy.ACCESSIBILITY_ID, "search_input"), keyword + "\n")
         
     def is_search_results_displayed(self) -> bool:
-        btns = self.wait_for_elements((AppiumBy.XPATH, "//*[contains(@label, '조회수') or contains(@name, '조회수')]"), timeout=3)
+        # [리팩터링] Appium은 ACCESSIBILITY_ID 정규식을 지원하지 않으므로, 
+        # 대신 iOS/Android 공통적으로 label이 "post_item_"으로 시작하는 요소를 XPATH로 찾거나 
+        # 그냥 ListView 자체에 ID를 주는 것이 좋음. 여기선 ListView 자체를 찾도록 수정 가능하지만
+        # 임시로 starts-with 사용
+        btns = self.wait_for_elements((AppiumBy.ACCESSIBILITY_ID, "search_results_list"), timeout=3)
         return len(btns) > 0
 
     def is_empty_search_message_displayed(self) -> bool:
-        return self.is_displayed((AppiumBy.XPATH, "//*[contains(@label, '게시글이 없습니다.') or contains(@name, '게시글이 없습니다.')]"))
+        return self.is_displayed((AppiumBy.ACCESSIBILITY_ID, "empty_result_msg"))
 
-    def click_comment_more_menu(self):
-        self.click_element((AppiumBy.XPATH, "//*[contains(@label, '댓글 더보기') or contains(@name, '댓글 더보기')]"))
-        
     def click_edit_comment(self):
-        self.click_element((AppiumBy.XPATH, "//XCUIElementTypeButton[contains(@label, '수정') or contains(@name, '수정')]"))
+        self.click_element((AppiumBy.ACCESSIBILITY_ID, "comment_menu_edit"))
         
     def click_delete_comment(self):
-        self.click_element((AppiumBy.XPATH, "//*[contains(@label, '삭제') or contains(@name, '삭제')]"))
+        self.click_element((AppiumBy.ACCESSIBILITY_ID, "comment_menu_delete"))
 
     def edit_comment(self, text: str):
-        self.input_text((AppiumBy.XPATH, "//XCUIElementTypeTextField"), text)
-        self.click_element((AppiumBy.XPATH, "//XCUIElementTypeButton[contains(@label, '수정') or contains(@name, '수정') or contains(@label, '확인')]"))
+        self.input_text((AppiumBy.ACCESSIBILITY_ID, "edit_comment_input"), text)
+        self.click_element((AppiumBy.ACCESSIBILITY_ID, "edit_comment_submit_btn"))
         
     def is_comment_displayed(self, text: str) -> bool:
-        return self.is_displayed((AppiumBy.XPATH, f"//*[contains(@label, '{text}') or contains(@name, '{text}')]"))
+        return self.is_displayed((AppiumBy.ACCESSIBILITY_ID, f"comment_content_{text}"))
         
-    def is_others_comment_more_visible(self, user_id: str) -> bool:
-        btns = self.wait_for_elements((AppiumBy.XPATH, f"//*[contains(@label, '{user_id}')]/following::XCUIElementTypeButton[1]"), timeout=2)
-        if not btns:
-            return False
-        # If button exists, click it and see if edit/delete is visible
-        try:
-            btns[0].click()
-            menus = self.wait_for_elements((AppiumBy.XPATH, "//*[contains(@label, '수정') or contains(@label, '삭제')]"), timeout=2)
-            return len(menus) > 0
-        except Exception:
-            return False
+    def is_others_comment_more_visible(self, comment_text: str) -> bool:
+        # [리팩터링] 고유 ID를 부여했으므로 버튼 존재 자체가 버그임. 바로 노출 여부 반환.
+        return self.is_displayed((AppiumBy.ACCESSIBILITY_ID, f"comment_more_btn_{comment_text}"), timeout=2)
 
     def is_others_post_more_visible(self) -> bool:
-        btns = self.wait_for_elements((AppiumBy.XPATH, "//XCUIElementTypeButton[contains(@label, 'Show menu') or contains(@name, 'Show menu')]"), timeout=2)
-        if not btns:
-            btns = self.wait_for_elements((AppiumBy.XPATH, "//XCUIElementTypeButton"), timeout=2)
-        if not btns:
-            return False
-            
-        try:
-            btns[-1].click()
-            menus = self.wait_for_elements((AppiumBy.XPATH, "//*[contains(@label, '글 수정') or contains(@label, '글 삭제')]"), timeout=2)
-            return len(menus) > 0
-        except Exception:
-            return False
+        # [리팩터링] 고유 ID를 부여했으므로 버튼 존재 자체가 버그임. 바로 노출 여부 반환.
+        return self.is_displayed((AppiumBy.ACCESSIBILITY_ID, "post_more_btn"), timeout=2)

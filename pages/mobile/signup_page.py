@@ -35,7 +35,7 @@ class MobileSignupPage(MobileBasePage):
 
     def click_submit(self):
         self.scroll_down()
-        self.click_element((AppiumBy.XPATH, "//XCUIElementTypeButton[@name='회원가입' or @label='회원가입']"))
+        self.click_element((AppiumBy.ACCESSIBILITY_ID, "btn_submit_signup"))
 
     def is_error_message_displayed(self, expected_text: str) -> bool:
         # XPath 문법 오류(single quote 중첩)를 피하기 위해 expected_text에 '가 있으면 쌍따옴표로 감쌉니다.

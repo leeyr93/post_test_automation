@@ -20,7 +20,7 @@ class MobileLoginPage(MobileBasePage):
         return self.is_displayed(locator)
 
     def click_logout(self):
-        self.click_element((AppiumBy.XPATH, "//XCUIElementTypeButton[contains(@label, '로그아웃') or contains(@name, '로그아웃')]"))
+        self.click_element((AppiumBy.XPATH, "//*[@name='btn_logout' or @label='로그아웃' or @name='로그아웃']"))
         
     def is_login_screen_displayed(self) -> bool:
         return self.is_displayed((AppiumBy.ACCESSIBILITY_ID, "아이디"))

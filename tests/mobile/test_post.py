@@ -29,6 +29,8 @@ def test_mobile_create_post(mobile_logged_in):
     # 전역으로 설정된 암묵적 대기(implicitly_wait)를 활용하여 요소 검색
     assert post_page.is_post_in_list(test_title), f"{AssertMsg.POST_NOT_FOUND} (제목: {test_title})"
 
+
+##TODO: 댓글 작성 기능은 text_comment.py로 이동
 @allure.id("M-TC-08")
 @allure.title("[모바일] 게시글 상세 진입 및 댓글 달기")
 def test_mobile_write_comment(mobile_logged_in, mobile_test_post_title):

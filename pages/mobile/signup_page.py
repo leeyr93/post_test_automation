@@ -1,88 +1,46 @@
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.common.exceptions import StaleElementReferenceException
 from appium.webdriver.common.appiumby import AppiumBy
+from pages.mobile.base_page import MobileBasePage
 
-class MobileSignupPage:
-    def __init__(self, driver):
-        self.driver = driver
+class MobileSignupPage(MobileBasePage):
         
     def click_signup_link(self):
-        self.driver.find_element(AppiumBy.ACCESSIBILITY_ID, "회원가입").click()
+        self.click_element((AppiumBy.ACCESSIBILITY_ID, "회원가입"))
 
     def enter_id(self, user_id):
-        # 화면 전환 애니메이션을 기다리고, 요소를 탭하여 포커스를 맞춘 뒤 active_element에 직접 입력
-        elem = WebDriverWait(self.driver, 10).until(
-            EC.presence_of_element_located((AppiumBy.ACCESSIBILITY_ID, "아이디"))
-        )
-        try:
-            elem.click()
-        except Exception:
-            pass # Stale 시도 무시, 이미 포커스 됐을 수 있음
-        
-        # 키보드 입력은 활성화된 요소에 직접 전달하여 StaleElementReferenceException 원천 차단
-        self.driver.switch_to.active_element.send_keys(user_id)
+        self.input_text_active((AppiumBy.ACCESSIBILITY_ID, "아이디"), user_id)
 
     def scroll_down(self):
         try:
-            # 키보드 버튼을 찾을 때는 10초 대기를 무시하고 즉시(0초) 확인하도록 설정
-            self.driver.implicitly_wait(0)
-            try: self.driver.find_element(AppiumBy.ACCESSIBILITY_ID, "Done").click()
+            # 명시적 대기로 키보드 내리기 시도
+            try: self.click_element((AppiumBy.ACCESSIBILITY_ID, "Done"), timeout=1)
             except: pass
-            try: self.driver.find_element(AppiumBy.ACCESSIBILITY_ID, "Return").click()
+            try: self.click_element((AppiumBy.ACCESSIBILITY_ID, "Return"), timeout=1)
             except: pass
-            self.driver.implicitly_wait(10) # 원래 대기 시간으로 복구
             
-            # iOS XCUITest의 가장 안정적인 네이티브 스크롤
             self.driver.execute_script("mobile: scroll", {"direction": "down"})
         except Exception:
             pass
 
     def enter_name(self, name):
-        elem = WebDriverWait(self.driver, 10).until(
-            EC.presence_of_element_located((AppiumBy.ACCESSIBILITY_ID, "이름"))
-        )
-        try:
-            elem.click()
-        except Exception:
-            pass
-        self.driver.switch_to.active_element.send_keys(name)
+        self.input_text_active((AppiumBy.ACCESSIBILITY_ID, "이름"), name)
 
     def enter_email(self, email):
-        elem = WebDriverWait(self.driver, 10).until(
-            EC.presence_of_element_located((AppiumBy.ACCESSIBILITY_ID, "이메일"))
-        )
-        try:
-            elem.click()
-        except Exception:
-            pass
-        self.driver.switch_to.active_element.send_keys(email)
+        self.input_text_active((AppiumBy.ACCESSIBILITY_ID, "이메일"), email)
 
     def enter_password(self, pw):
-        elem = WebDriverWait(self.driver, 10).until(
-            EC.presence_of_element_located((AppiumBy.ACCESSIBILITY_ID, "비밀번호"))
-        )
-        try:
-            elem.click()
-        except Exception:
-            pass
-        self.driver.switch_to.active_element.send_keys(pw)
+        self.input_text_active((AppiumBy.ACCESSIBILITY_ID, "비밀번호"), pw)
 
     def enter_password_confirm(self, pw):
-        elem = WebDriverWait(self.driver, 10).until(
-            EC.presence_of_element_located((AppiumBy.ACCESSIBILITY_ID, "비밀번호 확인"))
-        )
-        try:
-            elem.click()
-        except Exception:
-            pass
-        self.driver.switch_to.active_element.send_keys(pw)
+        self.input_text_active((AppiumBy.ACCESSIBILITY_ID, "비밀번호 확인"), pw)
 
     def click_submit(self):
         self.scroll_down()
-        # 앱바 타이틀이 아닌 하단의 실제 전송 버튼을 클릭
-        self.driver.find_element(AppiumBy.XPATH, "//XCUIElementTypeButton[@name='회원가입' or @label='회원가입']").click()
+        self.click_element((AppiumBy.XPATH, "//XCUIElementTypeButton[@name='회원가입' or @label='회원가입']"))
 
-    def get_error_message(self):
-        error_elem = self.driver.find_element(AppiumBy.XPATH, "//*[contains(@label, '입력') or contains(@name, '입력') or contains(@value, '입력') or contains(@label, '일치') or contains(@name, '일치')]")
-        return error_elem.text
+    def is_error_message_displayed(self, expected_text: str) -> bool:
+        # XPath 문법 오류(single quote 중첩)를 피하기 위해 expected_text에 '가 있으면 쌍따옴표로 감쌉니다.
+        if "'" in expected_text:
+            xpath = f'//*[contains(@label, "{expected_text}") or contains(@name, "{expected_text}") or contains(@value, "{expected_text}")]'
+        else:
+            xpath = f"//*[contains(@label, '{expected_text}') or contains(@name, '{expected_text}') or contains(@value, '{expected_text}')]"
+        return self.is_displayed((AppiumBy.XPATH, xpath))

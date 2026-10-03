@@ -2,6 +2,7 @@ import pytest
 import allure
 from pages.mobile.login_page import MobileLoginPage
 from utils import user
+from utils.constants import UIErrorMsg, AssertMsg
 from appium.webdriver.common.appiumby import AppiumBy
 
 @allure.id("M-TC-01")
@@ -19,8 +20,8 @@ def test_mobile_login_success(mobile_driver):
     login_page.click_login()
     
     # 모바일 게시판 메인 화면(게시글 리스트) 진입 여부 검증 (글쓰기 FAB 노출 확인)
-    write_fab = mobile_driver.find_element(AppiumBy.ACCESSIBILITY_ID, "글쓰기")
-    assert write_fab.is_displayed(), "로그인 후 메인 화면(게시글 리스트)으로 이동하지 않았습니다."
+    from pages.mobile.post_page import MobilePostPage
+    assert MobilePostPage(mobile_driver).is_displayed((AppiumBy.ACCESSIBILITY_ID, "글쓰기"), timeout=15), AssertMsg.LOGIN_SUCCESS_FAIL
 
 @allure.id("M-TC-02")
 @allure.title("[모바일] 빈 필드 제출 시 에러 메시지 확인")
@@ -28,6 +29,42 @@ def test_mobile_login_empty(mobile_driver):
     login_page = MobileLoginPage(mobile_driver)
     
     login_page.click_login()
-    error_msg = login_page.get_error_message()
+    assert login_page.is_error_message_displayed(UIErrorMsg.LOGIN_EMPTY), AssertMsg.NOT_DISPLAYED
+
+@allure.id("M-TC-29")
+@allure.title("[모바일] 로그아웃 시 메인 화면(로그인 화면) 노출 확인")
+def test_mobile_logout_action(mobile_driver):
+    login_page = MobileLoginPage(mobile_driver)
     
-    assert "모두 입력해주세요" in error_msg, f"실제 에러 메시지: {error_msg}"
+    login_page.enter_id(user.ID)
+    login_page.enter_password(user.PWD)
+    login_page.click_login()
+    
+    # 로그인 완료 후 FAB 대기 
+    from pages.mobile.post_page import MobilePostPage
+    assert MobilePostPage(mobile_driver).is_displayed((AppiumBy.ACCESSIBILITY_ID, "글쓰기"), timeout=15)
+    
+    login_page.click_logout()
+    assert login_page.is_login_screen_displayed(), AssertMsg.LOGOUT_FAIL
+
+@allure.id("M-TC-26")
+@allure.title("[모바일] 미등록 계정 정보로 로그인 시도시 에러 메시지 노출 확인")
+def test_mobile_login_unknown_user(mobile_driver):
+    login_page = MobileLoginPage(mobile_driver)
+    
+    login_page.enter_id("unknown_user_123")
+    login_page.enter_password("wrongpassword123!")
+    login_page.click_login()
+    
+    assert login_page.is_error_message_displayed(UIErrorMsg.LOGIN_UNKNOWN_USER), AssertMsg.ERROR_MISMATCH
+
+@allure.id("M-TC-27")
+@allure.title("[모바일] 잘못된 비밀번호 입력 시 에러 메시지 노출 확인")
+def test_mobile_login_wrong_password(mobile_driver):
+    login_page = MobileLoginPage(mobile_driver)
+    
+    login_page.enter_id(user.ID)
+    login_page.enter_password("wrongpassword123!")
+    login_page.click_login()
+    
+    assert login_page.is_error_message_displayed(UIErrorMsg.LOGIN_WRONG_PASSWORD), AssertMsg.ERROR_MISMATCH

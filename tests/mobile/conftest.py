@@ -22,7 +22,7 @@ def mobile_driver():
 
     # 로컬 Appium 서버에 연결
     driver = webdriver.Remote("http://127.0.0.1:4723", options=options)
-    driver.implicitly_wait(10)
+    # driver.implicitly_wait(10)  # BasePage 명시적 대기로 대체
     
     yield driver
     

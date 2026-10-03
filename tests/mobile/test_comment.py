@@ -1,3 +1,4 @@
+import pytest
 import allure
 import uuid
 from selenium.webdriver.support.ui import WebDriverWait
@@ -5,6 +6,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from appium.webdriver.common.appiumby import AppiumBy
 from pages.mobile.post_page import MobilePostPage
 from utils import user
+from utils.constants import AssertMsg
 
 @allure.id("M-TC-67")
 @allure.title("[모바일] 댓글 내용 수정 확인")
@@ -12,9 +14,8 @@ def test_mobile_edit_comment(mobile_logged_in, mobile_test_post_title):
     mobile_driver = mobile_logged_in
     post_page = MobilePostPage(mobile_driver)
     
-    # [사전 조건] 픽스처를 통해 자동 로그인 및 임시 게시글 작성됨
+    # [사전 조건] 자동 로그인 및 임시 게시글 작성됨
     test_title = mobile_test_post_title
-    
     post_page.open_post_by_title(test_title)
     
     # 댓글 달기
@@ -45,8 +46,7 @@ def test_mobile_edit_comment(mobile_logged_in, mobile_test_post_title):
     mobile_driver.find_element(AppiumBy.XPATH, "//XCUIElementTypeButton[contains(@label, '수정') or contains(@name, '수정') or contains(@label, '확인')]").click()
     
     # 내용 확인
-    edited = mobile_driver.find_element(AppiumBy.XPATH, f"//*[contains(@label, '{edited_text}') or contains(@name, '{edited_text}')]")
-    assert edited.is_displayed(), "댓글 내용이 정상적으로 수정되지 않았습니다."
+    assert post_page.is_comment_displayed(edited_text), "댓글 내용이 정상적으로 수정되지 않았습니다."
 
 
 @allure.id("M-TC-68")
@@ -80,3 +80,16 @@ def test_mobile_delete_comment(mobile_logged_in, mobile_test_post_title):
     # 삭제 확인
     WebDriverWait(mobile_driver, 10).until(EC.invisibility_of_element_located((AppiumBy.XPATH, f"//*[contains(@label, '{comment_text}') or contains(@name, '{comment_text}')]")))
 
+
+@allure.id("M-TC-71")
+@allure.title("[모바일] 타인 작성 댓글 수정/삭제 메뉴 미노출 확인")
+def test_mobile_comment_others_hidden(mobile_logged_in):
+    mobile_driver = mobile_logged_in
+    post_page = MobilePostPage(mobile_driver)
+    
+    post_page.open_post_by_title(user.ID_TEMP)
+    
+    if not post_page.is_comment_displayed(user.ID_TEMP):
+        pytest.skip("화면에 타인이 작성한 댓글이 없어 스킵합니다.")
+        
+    assert not post_page.is_others_comment_more_visible(user.ID_TEMP), AssertMsg.AUTH_MENU_VISIBLE

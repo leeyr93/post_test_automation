@@ -4,6 +4,7 @@ import uuid
 from pages.mobile.login_page import MobileLoginPage
 from pages.mobile.post_page import MobilePostPage
 from utils import user
+from utils.constants import AssertMsg
 from appium.webdriver.common.appiumby import AppiumBy
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -26,8 +27,7 @@ def test_mobile_create_post(mobile_logged_in):
     
     # 3. 작성 후 목록에 노출되는지 검증
     # 전역으로 설정된 암묵적 대기(implicitly_wait)를 활용하여 요소 검색
-    created_post = mobile_driver.find_element(AppiumBy.XPATH, f"//*[contains(@label, '{test_title}') or contains(@name, '{test_title}')]")
-    assert created_post.is_displayed(), f"작성한 게시글('{test_title}')이 목록에 노출되지 않습니다."
+    assert post_page.is_post_in_list(test_title), f"{AssertMsg.POST_NOT_FOUND} (제목: {test_title})"
 
 @allure.id("M-TC-08")
 @allure.title("[모바일] 게시글 상세 진입 및 댓글 달기")
@@ -57,27 +57,21 @@ def test_mobile_edit_post(mobile_logged_in, mobile_test_post_title):
     post_page.open_post_by_title(test_title)
     
     # 수정 메뉴 클릭
-    more_btn = mobile_driver.find_elements(AppiumBy.XPATH, "//XCUIElementTypeButton[contains(@label, 'Show menu') or contains(@name, 'Show menu')]")
-    if not more_btn:
-        # 혹시 버튼 라벨이 다를 경우 대비해 가장 첫 번째/마지막 버튼 시도
-        more_btn = mobile_driver.find_elements(AppiumBy.XPATH, "//XCUIElementTypeButton")
-    more_btn[-1].click()
+    post_page.click_more_menu()
     
     # '글 수정' 팝업 메뉴 클릭
-    mobile_driver.find_element(AppiumBy.XPATH, "//*[contains(@label, '글 수정') or contains(@name, '글 수정')]").click()
+    post_page.click_edit_post()
     
     # 내용 변경 후 저장
     new_title = test_title + " (수정됨)"
     
     # 제목 필드를 지우고 다시 입력
-    title_field = mobile_driver.find_element(AppiumBy.ACCESSIBILITY_ID, "제목")
-    title_field.clear()
-    title_field.send_keys(new_title)
-    mobile_driver.find_element(AppiumBy.ACCESSIBILITY_ID, "수정 완료").click()
+    post_page.clear_title()
+    post_page.enter_title(new_title)
+    post_page.click_edit_complete()
     
     # 목록에서 수정된 제목 확인
-    edited = mobile_driver.find_element(AppiumBy.XPATH, f"//*[contains(@label, '{new_title}') or contains(@name, '{new_title}')]")
-    assert edited.is_displayed(), "수정된 게시글 제목이 보이지 않습니다."
+    assert post_page.is_post_in_list(new_title), AssertMsg.POST_NOT_FOUND
 
 @allure.id("M-TC-64")
 @allure.title("[모바일] 본인 작성 글 삭제 확인")
@@ -91,14 +85,24 @@ def test_mobile_delete_post(mobile_logged_in, mobile_test_post_title):
     post_page.open_post_by_title(test_title)
     
     # 삭제 메뉴 클릭
-    more_btn = mobile_driver.find_elements(AppiumBy.XPATH, "//XCUIElementTypeButton[contains(@label, 'Show menu') or contains(@name, 'Show menu')]")
-    if not more_btn:
-        more_btn = mobile_driver.find_elements(AppiumBy.XPATH, "//XCUIElementTypeButton")
-    more_btn[-1].click()
+    post_page.click_more_menu()
     
-    mobile_driver.find_element(AppiumBy.XPATH, "//*[contains(@label, '글 삭제') or contains(@name, '글 삭제')]").click()
+    post_page.click_delete_post()
     
     # 목록에서 글이 사라졌는지 확인
     # implicitly_wait 때문에 없는 요소를 찾을 때 오래 걸릴 수 있으므로 그냥 find_elements 결과가 비어있는지 체크
-    WebDriverWait(mobile_driver, 10).until(EC.invisibility_of_element_located((AppiumBy.XPATH, f"//*[contains(@label, '{test_title}') or contains(@name, '{test_title}')]")))
+    assert not post_page.is_post_in_list(test_title), AssertMsg.POST_NOT_DELETED
 
+
+@allure.id("M-TC-63")
+@allure.title("[모바일] 타인 작성 글 수정/삭제 메뉴 미노출 확인")
+def test_mobile_post_others_hidden(mobile_logged_in):
+    mobile_driver = mobile_logged_in
+    post_page = MobilePostPage(mobile_driver)
+    
+    try:
+        post_page.open_post_by_title(user.ID_TEMP)
+    except Exception:
+        pytest.skip(f"테스트를 위한 '{user.ID_TEMP}' 작성 게시글을 화면에서 찾을 수 없어 스킵합니다.")
+        
+    assert not post_page.is_others_post_more_visible(), AssertMsg.AUTH_MENU_VISIBLE

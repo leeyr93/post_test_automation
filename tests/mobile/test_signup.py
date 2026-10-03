@@ -1,18 +1,31 @@
+from pages.mobile.base_page import MobileBasePage
 import pytest
 import allure
 import uuid
 from pages.mobile.signup_page import MobileSignupPage
+from test_data.signup_cases import INVALID_CASES, get_valid_user_data
 
-@allure.id("M-TC-03")
-@allure.title("[모바일] 회원가입 빈 필드 에러 노출 확인")
-def test_mobile_signup_empty(mobile_driver):
+@allure.title("[모바일] 회원가입 실패: {case[tc_title]}")
+@pytest.mark.parametrize("case", INVALID_CASES, ids=lambda c: c["name"])
+def test_mobile_signup_invalid(mobile_driver, case):
     signup_page = MobileSignupPage(mobile_driver)
     signup_page.click_signup_link()
     
-    signup_page.click_submit()
-    error_msg = signup_page.get_error_message()
+    # 기본 유효 데이터에 실패 케이스 데이터를 덮어씀
+    data = get_valid_user_data(**case["override"])
     
-    assert "입력해주세요" in error_msg, "빈 필드 검증 에러 메시지가 표시되어야 합니다."
+    # 데이터가 빈 문자열이 아닌 경우에만 입력 (빈 문자열은 입력 생략하여 미입력 케이스 모사)
+    if data["user_id"]: signup_page.enter_id(data["user_id"])
+    if data["password"]: signup_page.enter_password(data["password"])
+    if data["repassword"]: signup_page.enter_password_confirm(data["repassword"])
+    if data["name"]: signup_page.enter_name(data["name"])
+    if data["email"]: signup_page.enter_email(data["email"])
+    
+    signup_page.click_submit()
+    
+    # 에러 메시지 검증
+    expected_msg = case["expected"]["message"]
+    assert signup_page.is_error_message_displayed(expected_msg), f"에러 메시지가 노출되지 않았습니다. 예상 메시지: {expected_msg}"
 
 @allure.id("M-TC-04")
 @allure.title("[모바일] 회원가입 정상 처리 확인")

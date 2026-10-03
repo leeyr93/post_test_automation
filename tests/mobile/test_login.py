@@ -25,11 +25,26 @@ def test_mobile_login_success(mobile_driver):
 
 @allure.id("M-TC-02")
 @allure.title("[모바일] 빈 필드 제출 시 에러 메시지 확인")
-def test_mobile_login_empty(mobile_driver):
+def test_mobile_login_empty_both(mobile_driver):
     login_page = MobileLoginPage(mobile_driver)
-    
     login_page.click_login()
-    assert login_page.is_error_message_displayed(UIErrorMsg.LOGIN_EMPTY), AssertMsg.NOT_DISPLAYED
+    assert login_page.is_error_message_displayed(UIErrorMsg.LOGIN_EMPTY_BOTH), AssertMsg.NOT_DISPLAYED
+
+@allure.id("M-TC-24")
+@allure.title("[모바일] 아이디 미입력 시 에러 메시지 노출 확인")
+def test_mobile_login_empty_id(mobile_driver):
+    login_page = MobileLoginPage(mobile_driver)
+    login_page.enter_password("testpassword")
+    login_page.click_login()
+    assert login_page.is_error_message_displayed(UIErrorMsg.LOGIN_EMPTY_ID), AssertMsg.NOT_DISPLAYED
+
+@allure.id("M-TC-25")
+@allure.title("[모바일] 비밀번호 미입력 시 에러 메시지 노출 확인")
+def test_mobile_login_empty_password(mobile_driver):
+    login_page = MobileLoginPage(mobile_driver)
+    login_page.enter_id("testuser")
+    login_page.click_login()
+    assert login_page.is_error_message_displayed(UIErrorMsg.LOGIN_EMPTY_PASSWORD), AssertMsg.NOT_DISPLAYED
 
 @allure.id("M-TC-29")
 @allure.title("[모바일] 로그아웃 시 메인 화면(로그인 화면) 노출 확인")

@@ -1,9 +1,13 @@
 class UIErrorMsg:
     """UI 상에 노출되는 에러 메시지 텍스트를 상수로 관리합니다."""
-    LOGIN_EMPTY = "모두 입력해주세요"
+    # 공통 서브스트링으로 관리하여 Web과 Mobile 모두에서 to_contain_text / contains(@label) 로 호환되게 함
+    LOGIN_EMPTY_BOTH = "아이디, 비밀번호를 입력해주세요"
+    LOGIN_EMPTY_ID = "아이디를 입력해주세요"
+    LOGIN_EMPTY_PASSWORD = "비밀번호를 입력해주세요" 
     LOGIN_UNKNOWN_USER = "존재하지 않는"
     LOGIN_WRONG_PASSWORD = "일치하지 않습니다"
     FIND_ACCOUNT_EMPTY = "입력"
+    FIND_ACCOUNT_NOT_FOUND = "일치하는 정보가 없습니다."
 
 class AssertMsg:
     """Assertion 실패 시 출력할 공통 로그 메시지를 상수로 관리합니다."""

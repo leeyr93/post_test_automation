@@ -4,6 +4,7 @@ from pages.web.login_page import LoginPage
 from pages.web.post_page import PostPage
 from utils.auth import login
 from utils import user
+from test_data.login_cases import LOGIN_INVALID_CASES
 from utils.constants import UIErrorMsg
 import re
 
@@ -21,56 +22,23 @@ def test_login_page_display(page):
 
     expect(login_page.login_button).to_be_visible()
 
-@allure.id("TC-23")
-@allure.title("아이디 및 비밀번호 미입력 시 에러 메시지 노출 확인")
-def test_login_empty_both(page):
-    login_page = LoginPage(page)
-    login_page.open()
-    login_page.login_button.click()
-    expect(login_page.error_message).to_be_visible()
-    expect(login_page.error_message).to_contain_text(UIErrorMsg.LOGIN_EMPTY_BOTH)
+@pytest.mark.parametrize("case", LOGIN_INVALID_CASES, ids=[c["name"] for c in LOGIN_INVALID_CASES])
+def test_login_invalid(page, case):
+    allure.dynamic.id(case.get("tc_id"))
+    allure.dynamic.title(case.get("tc_title"))
 
-@allure.id("TC-24")
-@allure.title("아이디 미입력 시 에러 메시지 노출 확인")
-def test_login_empty_id(page):
     login_page = LoginPage(page)
     login_page.open()
-    login_page.password_input.fill("testpassword")
+    
+    if case["data"]["id"]:
+        login_page.id_input.fill(case["data"]["id"])
+    if case["data"]["password"]:
+        login_page.password_input.fill(case["data"]["password"])
+        
     login_page.login_button.click()
+    
     expect(login_page.error_message).to_be_visible()
-    expect(login_page.error_message).to_contain_text(UIErrorMsg.LOGIN_EMPTY_ID)
-
-@allure.id("TC-25")
-@allure.title("비밀번호 미입력 시 에러 메시지 노출 확인")
-def test_login_empty_password(page):
-    login_page = LoginPage(page)
-    login_page.open()
-    login_page.id_input.fill("test1")
-    login_page.login_button.click()
-    expect(login_page.error_message).to_be_visible()
-    expect(login_page.error_message).to_contain_text(UIErrorMsg.LOGIN_EMPTY_PASSWORD)
-
-@allure.id("TC-26")
-@allure.title("미등록 계정 정보로 로그인 시도시 에러 메시지 노출 확인")
-def test_login_unknown_user(page):
-    login_page = LoginPage(page)
-    login_page.open()
-    login_page.id_input.fill("unknown_user_123")
-    login_page.password_input.fill("wrongpassword123!")
-    login_page.login_button.click()
-    expect(login_page.error_message).to_be_visible()
-    expect(login_page.error_message).to_contain_text(UIErrorMsg.LOGIN_UNKNOWN_USER)
-
-@allure.id("TC-27")
-@allure.title("잘못된 비밀번호 입력 시 에러 메시지 노출 확인")
-def test_login_wrong_password(page):
-    login_page = LoginPage(page)
-    login_page.open()
-    login_page.id_input.fill(user.ID)
-    login_page.password_input.fill("wrongpassword123!")
-    login_page.login_button.click()
-    expect(login_page.error_message).to_be_visible()
-    expect(login_page.error_message).to_contain_text(UIErrorMsg.LOGIN_WRONG_PASSWORD)
+    expect(login_page.error_message).to_contain_text(case["expected"]["message"])
 
 @allure.id("TC-28")
 @allure.title("로그인 완료 후 메인 화면 버튼 노출 확인")

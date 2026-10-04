@@ -27,19 +27,17 @@ def test_mobile_edit_comment(mobile_logged_in, mobile_test_post_title):
     # [리팩터링] Flutter 앱에 추가된 고유 Accessibility ID(tooltip)를 사용하여 더보기 버튼 클릭
     # 앱 소스에서 tooltip: 'comment_more_btn_${comm['comm_content']}' 로 부여함
     more_btn_id = f"comment_more_btn_{comment_text}"
-    mobile_driver.find_element(AppiumBy.ACCESSIBILITY_ID, more_btn_id).click()
+    post_page.click_element((AppiumBy.ACCESSIBILITY_ID, more_btn_id))
     
     # 수정 클릭
-    mobile_driver.find_element(AppiumBy.ACCESSIBILITY_ID, "comment_menu_edit").click()
+    post_page.click_element((AppiumBy.ACCESSIBILITY_ID, "comment_menu_edit"))
     
     # Alert 뜨면 수정 (Alert 안의 TextField)
-    alert_tf = mobile_driver.find_element(AppiumBy.ACCESSIBILITY_ID, "edit_comment_input")
-    alert_tf.clear()
     edited_text = f"수정된 댓글 내용 {uuid.uuid4().hex[:5]}"
-    alert_tf.send_keys(edited_text)
+    post_page.input_text((AppiumBy.ACCESSIBILITY_ID, "edit_comment_input"), edited_text)
     
     # Alert 수정 버튼 클릭 (보통 '수정' 라벨)
-    mobile_driver.find_element(AppiumBy.ACCESSIBILITY_ID, "edit_comment_submit_btn").click()
+    post_page.click_element((AppiumBy.ACCESSIBILITY_ID, "edit_comment_submit_btn"))
     
     # 내용 확인
     assert post_page.is_comment_displayed(edited_text), "댓글 내용이 정상적으로 수정되지 않았습니다."
@@ -63,10 +61,10 @@ def test_mobile_delete_comment(mobile_logged_in, mobile_test_post_title):
     # [리팩터링] Flutter 앱에 추가된 고유 Accessibility ID(tooltip)를 사용하여 더보기 버튼 클릭
     # 앱 소스에서 tooltip: 'comment_more_btn_${comm['comm_content']}' 로 부여함
     more_btn_id = f"comment_more_btn_{comment_text}"
-    mobile_driver.find_element(AppiumBy.ACCESSIBILITY_ID, more_btn_id).click()
+    post_page.click_element((AppiumBy.ACCESSIBILITY_ID, more_btn_id))
     
     # 삭제 클릭
-    mobile_driver.find_element(AppiumBy.ACCESSIBILITY_ID, "comment_menu_delete").click()
+    post_page.click_element((AppiumBy.ACCESSIBILITY_ID, "comment_menu_delete"))
     
     # 삭제 확인
     WebDriverWait(mobile_driver, 10).until(EC.invisibility_of_element_located((AppiumBy.ACCESSIBILITY_ID, f"comment_content_{comment_text}")))

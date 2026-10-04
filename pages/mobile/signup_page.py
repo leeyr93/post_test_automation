@@ -7,7 +7,7 @@ class MobileSignupPage(MobileBasePage):
         self.click_element((AppiumBy.ACCESSIBILITY_ID, "회원가입"))
 
     def enter_id(self, user_id):
-        self.input_text_active((AppiumBy.ACCESSIBILITY_ID, "아이디"), user_id)
+        self.input_text((AppiumBy.ACCESSIBILITY_ID, "아이디"), user_id)
 
     def scroll_down(self):
         try:
@@ -22,16 +22,16 @@ class MobileSignupPage(MobileBasePage):
             pass
 
     def enter_name(self, name):
-        self.input_text_active((AppiumBy.ACCESSIBILITY_ID, "이름"), name)
+        self.input_text((AppiumBy.ACCESSIBILITY_ID, "이름"), name)
 
     def enter_email(self, email):
-        self.input_text_active((AppiumBy.ACCESSIBILITY_ID, "이메일"), email)
+        self.input_text((AppiumBy.ACCESSIBILITY_ID, "이메일"), email)
 
     def enter_password(self, pw):
-        self.input_text_active((AppiumBy.ACCESSIBILITY_ID, "비밀번호"), pw)
+        self.input_text((AppiumBy.ACCESSIBILITY_ID, "비밀번호"), pw)
 
     def enter_password_confirm(self, pw):
-        self.input_text_active((AppiumBy.ACCESSIBILITY_ID, "비밀번호 확인"), pw)
+        self.input_text((AppiumBy.ACCESSIBILITY_ID, "비밀번호 확인"), pw)
 
     def click_submit(self):
         self.scroll_down()
@@ -40,7 +40,7 @@ class MobileSignupPage(MobileBasePage):
     def is_error_message_displayed(self, expected_text: str) -> bool:
         # XPath 문법 오류(single quote 중첩)를 피하기 위해 expected_text에 '가 있으면 쌍따옴표로 감쌉니다.
         if "'" in expected_text:
-            xpath = f'//*[contains(@label, "{expected_text}") or contains(@name, "{expected_text}") or contains(@value, "{expected_text}")]'
+            xpath = f'//*[contains(@label, "{expected_text}") or contains(@name, "{expected_text}") or contains(@value, "{expected_text}") or contains(@text, "{expected_text}") or contains(@content-desc, "{expected_text}")]'
         else:
-            xpath = f"//*[contains(@label, '{expected_text}') or contains(@name, '{expected_text}') or contains(@value, '{expected_text}')]"
+            xpath = f"//*[contains(@label, '{expected_text}') or contains(@name, '{expected_text}') or contains(@value, '{expected_text}') or contains(@text, '{expected_text}') or contains(@content-desc, '{expected_text}')]"
         return self.is_displayed((AppiumBy.XPATH, xpath))

@@ -16,11 +16,11 @@ class MobileLoginPage(MobileBasePage):
         self.click_element((AppiumBy.ACCESSIBILITY_ID, "로그인"))
         
     def is_error_message_displayed(self, expected_text: str) -> bool:
-        locator = (AppiumBy.XPATH, f"//*[contains(@label, '{expected_text}') or contains(@name, '{expected_text}') or contains(@value, '{expected_text}')]")
-        return self.is_displayed(locator)
+        xpath = f"//*[contains(@label, '{expected_text}') or contains(@name, '{expected_text}') or contains(@value, '{expected_text}') or contains(@text, '{expected_text}') or contains(@content-desc, '{expected_text}')]"
+        return self.is_displayed((AppiumBy.XPATH, xpath))
 
     def click_logout(self):
-        self.click_element((AppiumBy.XPATH, "//*[@name='btn_logout' or @label='로그아웃' or @name='로그아웃']"))
+        self.click_element((AppiumBy.XPATH, "//*[@name='btn_logout' or @label='로그아웃' or @name='로그아웃' or @text='로그아웃' or @content-desc='로그아웃']"))
         
     def is_login_screen_displayed(self) -> bool:
         return self.is_displayed((AppiumBy.ACCESSIBILITY_ID, "아이디"))

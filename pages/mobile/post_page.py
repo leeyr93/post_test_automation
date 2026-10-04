@@ -15,7 +15,7 @@ class MobilePostPage(MobileBasePage):
         self.click_element((AppiumBy.ACCESSIBILITY_ID, "등록하기"))
 
     def open_post_by_title(self, title):
-        self.click_element((AppiumBy.XPATH, f"(//*[contains(@label, '{title}') or contains(@name, '{title}')])[1]"))
+        self.click_element((AppiumBy.XPATH, f"(//*[contains(@label, '{title}') or contains(@name, '{title}') or contains(@text, '{title}') or contains(@content-desc, '{title}')])[1]"))
 
     def enter_comment(self, comment):
         self.input_text((AppiumBy.ACCESSIBILITY_ID, "comment_input"), comment + "\n")
@@ -33,7 +33,7 @@ class MobilePostPage(MobileBasePage):
         self.click_element((AppiumBy.ACCESSIBILITY_ID, "comment_submit_btn"))
 
     def is_post_in_list(self, title: str) -> bool:
-        return self.is_displayed((AppiumBy.XPATH, f"//*[contains(@label, '{title}') or contains(@name, '{title}')]"))
+        return self.is_displayed((AppiumBy.XPATH, f"//*[contains(@label, '{title}') or contains(@name, '{title}') or contains(@text, '{title}') or contains(@content-desc, '{title}')]"))
 
     def click_more_menu(self):
         # [리팩터링] 기본 tooltip(Show menu) 의존 제거. 앱에서 부여한 ID 사용
@@ -56,8 +56,12 @@ class MobilePostPage(MobileBasePage):
         self.click_element((AppiumBy.ACCESSIBILITY_ID, "수정 완료"))
 
     def search_post(self, keyword: str):
-        self.input_text((AppiumBy.ACCESSIBILITY_ID, "search_input"), keyword + "\n")
-        
+        self.input_text((AppiumBy.ACCESSIBILITY_ID, "search_input"), keyword)
+        platform = self.driver.capabilities.get("platformName", "").lower()
+        if platform == "android":
+            self.driver.press_keycode(66)
+        else:
+            self.input_text((AppiumBy.ACCESSIBILITY_ID, "search_input"), keyword + "\n")
     def is_search_results_displayed(self) -> bool:
         # [리팩터링] Appium은 ACCESSIBILITY_ID 정규식을 지원하지 않으므로, 
         # 대신 iOS/Android 공통적으로 label이 "post_item_"으로 시작하는 요소를 XPATH로 찾거나 
@@ -67,7 +71,9 @@ class MobilePostPage(MobileBasePage):
         return len(btns) > 0
 
     def is_empty_search_message_displayed(self) -> bool:
-        return self.is_displayed((AppiumBy.ACCESSIBILITY_ID, "empty_result_msg"))
+        msg = "게시글이 없습니다."
+        xpath = f"//*[contains(@label, '{msg}') or contains(@name, '{msg}') or contains(@text, '{msg}') or contains(@content-desc, '{msg}') or @content-desc='empty_result_msg' or @name='empty_result_msg']"
+        return self.is_displayed((AppiumBy.XPATH, xpath))
 
     def click_edit_comment(self):
         self.click_element((AppiumBy.ACCESSIBILITY_ID, "comment_menu_edit"))

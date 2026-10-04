@@ -1,6 +1,6 @@
-# 게시판 서비스 E2E & API 테스트 자동화
+# Web / App 게시판 서비스 E2E & API 테스트 자동화
 
-> 웹 게시판 서비스의 **E2E(Playwright)** 및 **API 인터페이스(Postman)** 통합 테스트 자동화 프로젝트입니다.
+> Web(Playwright) 및 App(Appium) 환경의 **게시판 서비스 테스트 자동화** 프로젝트입니다.
 
 ---
 
@@ -8,68 +8,54 @@
 
 | 산출물 | 설명 | 링크 |
 |---|---|:---:|
-| **대상 웹 게시판** | Node.js / Express 기반 웹 게시판 서비스 | [`leeyr93/post`](https://github.com/leeyr93/post) |
+| **대상 서비스** | Node.js 백엔드 및 Flutter 모바일 앱 | [`leeyr93/post`](https://github.com/leeyr93/post) |
 | **QA 테스트 케이스** | E2E 시나리오 조건·절차·기대결과 명세 | [`docs/qa_test_cases.csv`](./docs/qa_test_cases.csv) |
-| **Postman API 명세서** | 전체 API 및 예외/보안 검증 명세 | [Postman Documenter](https://documenter.getpostman.com/view/2584527/2sBYAxPUrH) |
-| **Allure 대시보드** | E2E 자동화 실행 결과 리포트 | [Allure Live Report](https://leeyr93.github.io/post_test_automation/docs/) |
+| **API 테스트 명세서** | 전체 API 및 예외/보안 검증 명세 | [Postman Documenter](https://documenter.getpostman.com/view/2584527/2sBYAxPUrH) |
+| **Allure 대시보드** | Web / App 통합 E2E 실행 결과 리포트 | [Allure Live Report](https://leeyr93.github.io/post_test_automation/docs/) |
 | **Newman 리포트** | API 자동화 실행 결과 HTML 리포트 | [Newman Live Report](https://leeyr93.github.io/post_test_automation/docs/newman_report.html) |
 
 ---
 
 ## 기술 스택
 
-* **E2E Automation**: Python 3.12, Playwright, pytest, POM (Page Object Model), Allure Framework, GitHub Pages
-* **API Test Automation**: Postman, Newman
+- **Web E2E**: Python 3.12, Playwright, pytest
+- **App E2E**: Appium (Flutter - Android / iOS)
+- **API Test**: Postman, Newman
+- **Reporting**: Allure Framework, GitHub Pages
 
 ---
 
 ## 테스트 범위 및 주요 검증 전략
 
-### 1. E2E 테스트 (Playwright, 총 74개 시나리오)
-* **회원가입 (21개)**: 입력 유효성 21종 검증, 특수문자 차단, 중복 가입 방지
-* **인증 및 세션 (11개)**: 계정 미존재/패스워드 불일치 예외 처리, 세션 쿠키 발급 및 로그아웃
-* **계정 찾기 (21개)**: 아이디 마스킹 노출, 정보 불일치 차단, 비밀번호 암호화 재설정
-* **게시판 & 댓글 CRUD (21개)**: 게시글/댓글 라이프사이클 및 타인 글/댓글 수정·삭제 비인가 접근 차단
+### 1. E2E 테스트 (Playwright / Appium)
+- **POM(Page Object Model) 패턴**: 화면 UI 요소와 테스트 로직을 분리해 유지보수성 향상
+- **회원 인증 및 세션**: 유효성 검증, 중복 방지, 세션 유지 및 비밀번호 재설정 플로우 검증
+- **게시판 & 댓글 CRUD**: 작성부터 조회·수정·삭제 라이프사이클 및 타인 글·댓글 제어 시 비인가 접근 차단
+- **크로스 플랫폼 검증**: Web 브라우저 및 Mobile(iOS / Android) 환경의 핵심 시나리오 100% 검증
 
-### 2. API 테스트 (Postman, 총 32개 API)
-* **Status Codes 검증**: `200 OK`, `400 Bad Request`, `403 Forbidden`, `404 Not Found`, `409 Conflict`
-* **동적 데이터 연동**: API 응답값(게시글/댓글 번호)을 추출해 다음 테스트에 자동 전달되도록 구성
-* **안정적인 반복 실행**: 폴더 단독 실행 시에도 사전 스크립트로 필수 데이터를 생성해 404/500 에러 방지
+### 2. API 테스트 (Postman / Newman)
+- **정상 및 예외 방어 로직 검증**: 정상 처리(`200`) 및 입력 오류(`400`), 미가입(`404`), 중복(`409`) 상태 코드 검증
+- **비인가 접근 차단 검증**: 타인 게시글·댓글 수정·삭제 시도에 대한 서버의 차단(`403`) 로직 자동 검증
+- **동적 데이터 연동**: API 응답값(게시글/댓글 번호)을 추출해 다음 테스트에 자동 전달되도록 구성
+- **안정적인 반복 실행**: 사전 스크립트로 임시 데이터를 자동 생성하여 테스트 간 독립성 확보
 
 ---
 
 ## 실행 가이드
 
-### 1. E2E 테스트 실행 (Playwright)
+### 1. 환경 설정
 ```bash
-# 가상환경 구성 및 패키지 설치
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 playwright install
-
-# 전체 E2E 테스트 실행 및 Allure 결과 수집
-pytest tests/ --alluredir=allure-results --clean-alluredir
-
-# Allure 대시보드 로컬 실행
-allure serve allure-results
 ```
 
-### 2. Allure 정적 리포트 재생성 (GitHub Pages 배포용)
+### 2. 테스트 실행
 ```bash
-allure generate allure-results --clean -o docs
+# Web & App(Android/iOS) E2E 테스트 실행 및 Allure 대시보드 자동 실행
+bash run_all_tests.sh
+
+# API 테스트 실행 및 Newman HTML 리포트 생성
+npx newman run docs/postman_collection.json -r cli,htmlextra --reporter-htmlextra-export ./docs/newman_report.html
 ```
-
-### 3. API 테스트 실행 (Newman CLI)
-```bash
-# 리포트 생성을 위한 npm 패키지 설치
-npm install newman-reporter-htmlextra
-
-# 콘솔에서 즉시 전체 테스트 실행 (32개 검증)
-npx newman run docs/postman_collection.json
-
-# 대시보드 형태의 HTML 리포트 생성
-npx newman run docs/postman_collection.json -r htmlextra --reporter-htmlextra-export ./docs/newman_report.html
-```
-
-

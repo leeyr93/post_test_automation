@@ -1,9 +1,13 @@
+import allure
 import pytest, uuid
 from playwright.sync_api import sync_playwright
 from services import post_service
 from pages.web.signup_page import SignupPage
 from utils.auth import login
 from utils import user
+
+def pytest_runtest_setup(item):
+    allure.dynamic.parent_suite("Web Tests")
 
 @pytest.fixture(scope="session")
 def browser():

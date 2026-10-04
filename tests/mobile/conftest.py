@@ -1,4 +1,20 @@
 import os
+import allure
+
+def pytest_runtest_setup(item):
+    # Allure 리포트에서 iOS와 Android 결과를 분리해서 볼 수 있도록
+    # 실행 중인 PLATFORM 환경변수 값을 Parent Suite 라벨과 Parameter로 동적 추가합니다.
+    raw_platform = os.getenv("PLATFORM", "unknown").lower()
+    if raw_platform == "android":
+        platform_name = "Android"
+    elif raw_platform == "ios":
+        platform_name = "iOS"
+    else:
+        platform_name = raw_platform.capitalize()
+
+    allure.dynamic.parent_suite(f"{platform_name} App Tests")
+    allure.dynamic.parameter("Platform", platform_name)
+
 import pytest, uuid
 from appium import webdriver
 from appium.options.ios import XCUITestOptions

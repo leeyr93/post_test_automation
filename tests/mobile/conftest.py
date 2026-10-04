@@ -1,6 +1,8 @@
+import os
 import pytest, uuid
 from appium import webdriver
 from appium.options.ios import XCUITestOptions
+from appium.options.android import UiAutomator2Options
 from pages.mobile.login_page import MobileLoginPage
 from pages.mobile.post_page import MobilePostPage
 from utils import user
@@ -8,21 +10,32 @@ from utils import user
 @pytest.fixture(scope="session")
 def mobile_driver():
     """
-    [Mobile] Appium iOS 18 시뮬레이터 픽스처
-    - scope="session": 매 테스트마다 세션을 맺지 않고 한 번만 연결 (실행 속도 대폭 향상)
+    [Mobile] Appium iOS/Android 크로스 플랫폼 픽스처
+    - PLATFORM 환경 변수(ios/android)에 따라 드라이버 옵션 자동 분기
+    - scope="session": 매 테스트마다 세션을 맺지 않고 한 번만 연결
     """
-    options = XCUITestOptions()
-    options.platform_name = "iOS"
-    options.device_name = "iPhone 18 Pro"
-    options.udid = "189E5622-BA76-4EA5-8847-3BB6AC1A991F"
-    options.automation_name = "XCUITest"
+    platform = os.getenv("PLATFORM", "ios").lower()
     
-    # 플러터 빌드앱 절대경로
-    options.app = "/Users/leeyr/Documents/GitHub/post/mobile/app/build/ios/iphonesimulator/Runner.app" 
+    if platform == "android":
+        options = UiAutomator2Options()
+        options.platform_name = "Android"
+        options.automation_name = "UIAutomator2"
+        # 안드로이드 에뮬레이터에서 실행할 APK 경로
+        options.app = "/Users/leeyr/Documents/GitHub/post/mobile/app/build/app/outputs/flutter-apk/app-debug.apk"
+        # 필요한 경우 기본 패키지명 명시
+        options.app_package = "com.example.app"
+        options.app_activity = ".MainActivity"
+    else:
+        options = XCUITestOptions()
+        options.platform_name = "iOS"
+        options.device_name = "iPhone 18 Pro"
+        options.udid = "189E5622-BA76-4EA5-8847-3BB6AC1A991F"
+        options.automation_name = "XCUITest"
+        # iOS 시뮬레이터에서 실행할 앱 경로
+        options.app = "/Users/leeyr/Documents/GitHub/post/mobile/app/build/ios/iphonesimulator/Runner.app" 
 
     # 로컬 Appium 서버에 연결
     driver = webdriver.Remote("http://127.0.0.1:4723", options=options)
-    # driver.implicitly_wait(10)  # BasePage 명시적 대기로 대체
     
     yield driver
     
